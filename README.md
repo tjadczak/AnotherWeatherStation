@@ -1,11 +1,7 @@
-ESP-IDF template app
+AnotherWheatherStation
 ====================
 
-This is a template application to be used with [Espressif IoT Development Framework](https://github.com/espressif/esp-idf).
+ESP32 based weather station with BMP280 Digital Pressure Sensor and 16x2 LCD display.
 
-Please check [ESP-IDF docs](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for getting started instructions.
+Project using Test Driven Development technique using Unity test framework https://www.throwtheswitch.org/unity.
 
-*Code in this repository is in the Public Domain (or CC0 licensed, at your option.)
-Unless required by applicable law or agreed to in writing, this
-software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-CONDITIONS OF ANY KIND, either express or implied.*
