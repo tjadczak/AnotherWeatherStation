@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "I2C.h"
+#include "BMP280_I2C.h"
 #include "Interrupts.h"
 #include "LcdDisplay.h"
 

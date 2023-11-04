@@ -5,9 +5,9 @@
 static void print_banner(const char* text);
 
 void app_main(void){
-    print_banner("Executing unit tests for I2C component");
+    print_banner("Executing unit tests for BMP280_I2C component");
     UNITY_BEGIN();
-    unity_run_tests_by_tag("I2C", false);
+    unity_run_tests_by_tag("BMP280_I2C", false);
     UNITY_END();
 
     print_banner("Executing unit tests for Interrupts component");
