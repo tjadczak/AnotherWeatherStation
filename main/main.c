@@ -17,10 +17,11 @@ void app_main(void){
     ESP_ERROR_CHECK(BMP280_init());
     ESP_LOGI(PROJECT_NAME, "I2C initialized successfully");
     ESP_LOGI(PROJECT_NAME, "BMP280 ID == %#02x", BMP280_check_ID());
-    ESP_ERROR_CHECK(BMP280_set_ctrl_meas());
-    ESP_LOGI(PROJECT_NAME, "BMP280 ctrl meas set");
-    ESP_ERROR_CHECK(BMP280_set_config());
-    ESP_LOGI(PROJECT_NAME, "BMP280 config set");
+    BMP280_read_compensation_data();
+    //ESP_ERROR_CHECK(BMP280_set_ctrl_meas());
+    //ESP_LOGI(PROJECT_NAME, "BMP280 ctrl meas set");
+    //ESP_ERROR_CHECK(BMP280_set_config());
+    //ESP_LOGI(PROJECT_NAME, "BMP280 config set");
 
     // Initialize LCD display
     // Initialize interrupts to read and display measurements on demand (button)
