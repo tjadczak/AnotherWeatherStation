@@ -98,10 +98,21 @@ esp_err_t BMP280_set_config(void){
     return(BMP280_register_write_byte(BMP280_CONFIG_REG_ADDR, config));
 }
 
-/*void BMP280_read_temp_and_press(*float temp, *uint8_t press){
-
+bool BMP280_check_measuring_status(void){
+    uint8_t data;
+    BMP280_register_read(0xF3, &data, 1);
+    return data & 0b00001000;
 }
-*/
+
+void BMP280_read_temp_and_press(*float temp, *float press){
+    uint8_t data[6];
+    BMP280_S32_t temp_, press_;
+    BMP280_register_read(0xF3, &data, 6);
+    press_ = data[0] << 12 | data[1] << 4 | data[2] >> 4;
+    temp_ = data[3] << 12 | data[4] << 4 | data[5] >> 4;
+    temp = bmp280_compensate_T_int32(temp_)/100.0;
+    press = bmp280_compensate_P_int64(press_)/25600.0;
+}
 
 void BMP280_register_read(uint8_t reg_addr, uint8_t *data, size_t len)
 {
