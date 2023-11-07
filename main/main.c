@@ -31,7 +31,6 @@ void app_main(void){
 	//display measurements on LCD display
 	//go to deep sleep for 5 seconds
         //printf("temp = %f, press = %d\n", temp, press);
-        printf("elo\n");
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }

@@ -16,12 +16,13 @@
 
 // Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
 // t_fine carries fine temperature as global value
+BMP280_compensation comp;
 BMP280_S32_t t_fine;
+
 BMP280_S32_t bmp280_compensate_T_int32(BMP280_S32_t adc_T){
     BMP280_S32_t var1, var2, T;
-    var1 = ((((adc_T>>3) – ((BMP280_S32_t)comp.dig_T1<<1))) * ((BMP280_S32_t)comp.dig_T2)) >> 11;
-    var2 = (((((adc_T>>4) – ((BMP280_S32_t)comp.dig_T1)) * ((adc_T>>4) – ((BMP280_S32_t)comp.dig_T1))) >> 12) *
-    ((BMP280_S32_t)comp.dig_T3)) >> 14;
+    var1 = ((((adc_T>>3) - ((BMP280_S32_t)comp.dig_T1<<1))) * ((BMP280_S32_t)comp.dig_T2)) >> 11;
+    var2 = (((((adc_T>>4) - ((BMP280_S32_t)comp.dig_T1)) * ((adc_T>>4) - ((BMP280_S32_t)comp.dig_T1))) >> 12) * ((BMP280_S32_t)comp.dig_T3)) >> 14;
     t_fine = var1 + var2;
     T = (t_fine * 5 + 128) >> 8;
     return T;
@@ -31,7 +32,7 @@ BMP280_S32_t bmp280_compensate_T_int32(BMP280_S32_t adc_T){
 // Output value of “24674867” represents 24674867/256 = 96386.2 Pa = 963.862 hPa
 BMP280_U32_t bmp280_compensate_P_int64(BMP280_S32_t adc_P){
     BMP280_S64_t var1, var2, p;
-    var1 = ((BMP280_S64_t)t_fine) – 128000;
+    var1 = ((BMP280_S64_t)t_fine) - 128000;
     var2 = var1 * var1 * (BMP280_S64_t)comp.dig_P6;
     var2 = var2 + ((var1*(BMP280_S64_t)comp.dig_P5)<<17);
     var2 = var2 + (((BMP280_S64_t)comp.dig_P4)<<35);
@@ -64,18 +65,27 @@ esp_err_t BMP280_init(void){
     return i2c_driver_install(I2C_MASTER_PORT, conf.mode, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0);    
 }
 
-char BMP280_check_ID(void){
-    char ID;
+uint8_t BMP280_check_ID(void){
+    uint8_t ID;
     BMP280_register_read(BMP280_WHO_AM_I_REG_ADDR, &ID, 1);
     return ID;
 }
 
 void BMP280_read_compensation_data(void){
-    BMP280_compensation comp2;
-    char data[2];
-    BMP280_register_read(0x88, &data[0], 2);
-    comp2.dig_T1 == (uint16_t)data[1]<<8+data[0];
-    printf("comp.dig_T1 == %d", comp2.dig_T1);
+    uint8_t data[24];
+    BMP280_register_read(0x88, &data[0], 24);
+    comp.dig_T1 = data[1]<<8 | data[0];
+    comp.dig_T2 = data[3]<<8 | data[2];
+    comp.dig_T3 = data[5]<<8 | data[4];
+    comp.dig_P1 = data[7]<<8 | data[6];
+    comp.dig_P2 = data[9]<<8 | data[8];
+    comp.dig_P3 = data[11]<<8 | data[10];
+    comp.dig_P4 = data[13]<<8 | data[12];
+    comp.dig_P5 = data[15]<<8 | data[14];
+    comp.dig_P6 = data[17]<<8 | data[16];
+    comp.dig_P7 = data[19]<<8 | data[18];
+    comp.dig_P8 = data[21]<<8 | data[20];
+    comp.dig_P9 = data[23]<<8 | data[22];
 }
 
 esp_err_t BMP280_set_ctrl_meas(void){
@@ -93,7 +103,7 @@ esp_err_t BMP280_set_config(void){
 }
 */
 
-void BMP280_register_read(uint8_t reg_addr, char *data, size_t len)
+void BMP280_register_read(uint8_t reg_addr, uint8_t *data, size_t len)
 {
     ESP_ERROR_CHECK(i2c_master_write_read_device(I2C_MASTER_NUM, BMP280_SENSOR_ADDR, &reg_addr, 1, data, len, I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS));
 }
